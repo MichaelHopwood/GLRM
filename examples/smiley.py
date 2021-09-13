@@ -11,6 +11,8 @@ from numpy.random import randn, choice, seed
 from numpy import sign, ones
 import matplotlib.pyplot as plt
 from itertools import product
+from math import sqrt
+from random import sample
 seed(1)
 
 # Generate problem data (draw smiley with -1's, 1's)
@@ -27,11 +29,16 @@ for i,j in product(range(300, 451), range(100, 251)):
         data[i,j] = 1
         data[i,m-j] = 1
 
-plt.imshow(data)
+sym_noise = 0.2*sqrt(k)*randn(m,n)
+asym_noise = sqrt(k)*randn(m,n) + 3*abs(sqrt(k)*randn(m,n)) # large, sparse noise
+rate = 0.1 # percent of entries that are corrupted by large, outlier noise
+corrupted_entries = sample(list(product(range(m), range(n))), int(m*n*rate))
+A = data + sym_noise
+for ij in corrupted_entries: A[ij] += asym_noise[ij]
+
+plt.imshow(A)
 plt.show()
 
-# Initialize model
-A = data
 loss = HingeLoss
 regX, regY = QuadraticReg(0.1), QuadraticReg(0.1)
 converge = Convergence(TOL = 1e-2)
