@@ -1,3 +1,10 @@
+# Building regularized GLRM to derive SGC components
+
+```
+pip install cvxpy
+```
+
+
 ## GLRM
 
 GLRM is a python package for exploratory data analysis using Generalized Low

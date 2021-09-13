@@ -1,10 +1,15 @@
+import sys
+import os
+sys.path.append(os.path.join('..','glrm'))
+
 from glrm.loss import HingeLoss
 from glrm.reg import QuadraticReg
-from glrm import GLRM
+from glrm.glrm import GLRM
 from glrm.convergence import Convergence
 from glrm.util import pplot
 from numpy.random import randn, choice, seed
 from numpy import sign, ones
+import matplotlib.pyplot as plt
 from itertools import product
 seed(1)
 
@@ -22,12 +27,15 @@ for i,j in product(range(300, 451), range(100, 251)):
         data[i,j] = 1
         data[i,m-j] = 1
 
+plt.imshow(data)
+plt.show()
+
 # Initialize model
 A = data
 loss = HingeLoss
 regX, regY = QuadraticReg(0.1), QuadraticReg(0.1)
 converge = Convergence(TOL = 1e-2)
-glrm_binary = GLRM(A, loss, regX, regY, k, converge = converge)
+glrm_binary = GLRM(A, loss, k, regX, regY, converge = converge)
 
 # Fit
 glrm_binary.fit()

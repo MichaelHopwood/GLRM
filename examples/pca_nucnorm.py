@@ -1,6 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.join('..','glrm'))
+
 from glrm.loss import QuadraticLoss
 from glrm.reg import QuadraticReg, ZeroReg
-from glrm import GLRM
+from glrm.glrm import GLRM
 from glrm.util import pplot
 from numpy.random import randn, choice, seed
 from numpy.random import choice
@@ -17,7 +21,7 @@ data = randn(m,k).dot(randn(k,n)) + eta*randn(m,n) # noisy rank k
 A = data
 loss = QuadraticLoss
 regX, regY = QuadraticReg(0.0001), QuadraticReg(0.0001)
-glrm_nn = GLRM(A, loss, regX, regY, k)
+glrm_nn = GLRM(A, loss, k, regX, regY)
 
 # Fit
 glrm_nn.fit(eps=1e-4, max_iters=1000)

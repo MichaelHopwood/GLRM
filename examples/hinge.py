@@ -1,6 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.join('..','glrm'))
+
 from glrm.loss import HingeLoss
 from glrm.reg import NonnegativeReg, QuadraticReg
-from glrm import GLRM
+from glrm.glrm import GLRM
 from glrm.util import pplot
 from glrm.convergence import Convergence
 from numpy.random import randn, choice, seed

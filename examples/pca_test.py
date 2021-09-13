@@ -1,9 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.join('..','glrm'))
+
 from numpy import diag, sqrt, tile, hstack, vstack, ones
 from numpy.linalg import svd, norm
 from numpy.random import randn, seed
 from glrm.loss import QuadraticLoss, HuberLoss, HingeLoss
-from glrm import GLRM
+from glrm.glrm import GLRM
 from glrm.reg import QuadraticReg, LinearReg, NonnegativeReg
+import numpy as np
 seed(1)
 
 def PCA(A, k):
@@ -20,20 +25,23 @@ def PCA(A, k):
 def GLRMfit(A, k, missing=None):
     loss = QuadraticLoss
     regX, regY = LinearReg(0.001), LinearReg(0.001)
-    model = GLRM(A, loss, regX, regY, k, missing)
-    model.fit(eps=1e-4, max_iters=1000)
+    model = GLRM(A, loss, k, regX, regY, missing)
+    model.fit()
     model.converge.plot()
     return model.factors()
 
 if __name__ == '__main__':
     m, n, k = 100, 50, 10
     A = randn(m,n)
-    missing = [[(1,1), (3,5), (10, 10)]]
+    #missing = [[(1,1), (3,5), (10, 10)]]
+    #missing = np.asarray(missing)
+    missing=None
+
     X, Y = GLRMfit(A, k, missing)
     Xpca, Ypca = PCA(A, k)
 
     Z = A-X.dot(Y)
     Zpca = A-Xpca.dot(Ypca)
     for (i,j) in missing[0]: Z[i,j], Zpca[i,j] = 0,0
-    print norm(Z)
-    print norm(Zpca)
+    print(norm(Z))
+    print(norm(Zpca))

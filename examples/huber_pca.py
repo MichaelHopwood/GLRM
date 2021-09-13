@@ -1,6 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.join('..','glrm'))
+
 from glrm.loss import HuberLoss
 from glrm.reg import QuadraticReg
-from glrm import GLRM
+from glrm.glrm import GLRM
 from glrm.util import pplot
 from numpy.random import randn, choice, seed
 from numpy import sign
@@ -12,6 +16,8 @@ seed(1)
 
 # Generate problem data
 m, n, k = 50, 50, 5
+
+
 sym_noise = 0.2*sqrt(k)*randn(m,n)
 asym_noise = sqrt(k)*randn(m,n) + 3*abs(sqrt(k)*randn(m,n)) # large, sparse noise
 rate = 0.3 # percent of entries that are corrupted by large, outlier noise
@@ -23,23 +29,26 @@ for ij in corrupted_entries: A[ij] += asym_noise[ij]
 # Initialize model
 loss = HuberLoss
 regX, regY = QuadraticReg(0.1), QuadraticReg(0.1)
-glrm_huber = GLRM(A, loss, regX, regY, k)
+glrm_huber = GLRM(A, loss, k, regX, regY)
 
 # Fit
-glrm_huber.fit()
+X, Y = glrm_huber.fit()
 
 # Results
-X, Y = glrm_huber.factors()
 A_hat = glrm_huber.predict() # glrm_pca.predict(X, Y) works too; returns decode(XY)
-ch = glrm_huber.convergence() # convergence history
+ch = glrm_huber.converged # convergence history
 pplot([data, A, A_hat, data-A_hat], ["original", "corrupted", "glrm", "error"])
-
+plt.show()
 
 # Now with missing data
 from numpy.random import choice
+import numpy as np
 missing = list(product(range(int(0.25*m), int(0.75*m)), range(int(0.25*n), int(0.75*n))))
 
-glrm_huber_missing = GLRM(A, loss, regX, regY, k, missing)
+#dt=np.dtype('int,int')
+missing = np.asarray(missing)
+
+glrm_huber_missing = GLRM(A, loss, k, regX, regY, missing)
 glrm_huber_missing.fit()
 A_hat = glrm_huber_missing.predict()
 pplot([data, A, missing, A_hat, data-A_hat], ["original", "corrupted", "missing", "glrm", "error"])
