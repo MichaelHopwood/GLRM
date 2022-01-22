@@ -28,8 +28,6 @@ data = randn(m,k).dot(randn(k,n))
 A = data + sym_noise
 for ij in corrupted_entries: A[ij] += asym_noise[ij]
 
-A[:, 20] = 0
-
 # Initialize model
 loss = HuberLoss
 regX, regY = QuadraticReg(0.1), QuadraticReg(0.1)
@@ -58,3 +56,9 @@ glrm_huber_missing = GLRM(A, loss, k, regX, regY, missing)
 glrm_huber_missing.fit()
 A_hat = glrm_huber_missing.predict()
 pplot([data, A, missing, A_hat, data-A_hat], ["original", "corrupted", "missing", "glrm", "error"])
+
+glrm_huber.plot_convergence()
+plt.show()
+
+glrm_huber_missing.plot_convergence()
+plt.show()

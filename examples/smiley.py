@@ -29,19 +29,21 @@ for i,j in product(range(300, 451), range(100, 251)):
         data[i,j] = 1
         data[i,m-j] = 1
 
-sym_noise = 0.2*sqrt(k)*randn(m,n)
-asym_noise = sqrt(k)*randn(m,n) + 3*abs(sqrt(k)*randn(m,n)) # large, sparse noise
-rate = 0.1 # percent of entries that are corrupted by large, outlier noise
-corrupted_entries = sample(list(product(range(m), range(n))), int(m*n*rate))
-A = data + sym_noise
-for ij in corrupted_entries: A[ij] += asym_noise[ij]
+# sym_noise = 0.2*sqrt(k)*randn(m,n)
+# asym_noise = sqrt(k)*randn(m,n) + 3*abs(sqrt(k)*randn(m,n)) # large, sparse noise
+# rate = 0.1 # percent of entries that are corrupted by large, outlier noise
+# corrupted_entries = sample(list(product(range(m), range(n))), int(m*n*rate))
+# A = data + sym_noise
+# for ij in corrupted_entries: A[ij] += asym_noise[ij]
+
+A = data
 
 plt.imshow(A)
 plt.show()
 
 loss = HingeLoss
 regX, regY = QuadraticReg(0.1), QuadraticReg(0.1)
-converge = Convergence(TOL = 1e-2)
+converge = Convergence(TOL = 1e-2, max_iters=1e4)
 glrm_binary = GLRM(A, loss, k, regX, regY, converge = converge)
 
 # Fit
